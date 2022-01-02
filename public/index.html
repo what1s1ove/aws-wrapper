@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AWS Wrapper</title>
+</head>
+<body>
+  <h1>AWS Wrapper</h1>
+  <p>
+    <b>Status: </b>
+    <span class="status"></span>
+  </p>
+  <form class="form" method="POST" action="/aws-create-ec2">
+    <p>
+      <label>
+        Image Id
+        <select name="imageId" required>
+          <option value="ami-05d34d340fb1d89e5">Amazon Linux 2 AMI (HVM)</option>
+        </select>
+      </label>
+    </p>
+    <p>
+      <label>
+        Instance Type
+        <select name="instanceType" required>
+          <option value="t2.micro">t2.micro</option>
+        </select>
+      </label>
+    </p>
+    <button>
+      Create
+    </button>
+  </form>
+
+  <script>
+    const formNode = document.querySelector('.form')
+    const statusNode = document.querySelector('.status')
+
+    formNode.addEventListener('submit', (evt) => {
+      evt.preventDefault()
+
+      statusNode.textContent = 'Creating...'
+
+      fetch(formNode.action, {
+        headers: {
+          'content-type': 'application/json',
+        },
+        method: 'POST',
+        body: JSON.stringify(Object.fromEntries(new FormData(formNode))),
+      })
+        .then((res) => res.json())
+        .then((payload) => {
+          statusNode.textContent = `InstanceId – ${payload.instanceId} `
+        })
+        .catch((err) => {
+          statusNode.textContent = err?.message ?? 'Shit...'
+        })
+    })
+  </script>
+</body>
+</html>
